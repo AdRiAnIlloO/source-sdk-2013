@@ -743,9 +743,18 @@ void V_strncpy( char *pDest, char const *pSrc, int maxLen )
 	AssertValidWritePtr( pDest, maxLen );
 	AssertValidStringPtr( pSrc );
 
-	strncpy( pDest, pSrc, maxLen );
 	if ( maxLen > 0 )
 	{
+		for (int i = 0; i < maxLen; i++)
+		{
+			pDest[i] = pSrc[i];
+
+			if (pSrc[i] == '\0')
+			{
+				return;
+			}
+		}
+
 		pDest[maxLen-1] = 0;
 	}
 }
