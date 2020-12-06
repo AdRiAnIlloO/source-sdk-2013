@@ -410,7 +410,7 @@ const Vector CBasePlayer::GetPlayerMaxs( void ) const
 void CBasePlayer::CacheVehicleView( void )
 {
 	// If we've calculated the view this frame, then there's no need to recalculate it
-	if ( m_nVehicleViewSavedFrame == gpGlobals->framecount )
+	if ( m_nVehicleViewSavedFrame == gpGlobals->framecount || GetPredictionPlayer() == this )
 		return;
 
 #ifdef CLIENT_DLL
