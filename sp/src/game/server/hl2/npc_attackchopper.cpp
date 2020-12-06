@@ -3904,7 +3904,7 @@ void CNPC_AttackHelicopter::ComputeVelocity( const Vector &vecTargetPosition,
 	pVecAccel->z = 2.0f * (deltaPos.z - GetAbsVelocity().z * dt) / (dt * dt) + HELICOPTER_GRAVITY;
 
 	float flDistFromPath = 0.0f;
-	Vector vecPoint, vecDelta;
+	Vector vecPoint, vecDelta(0.0f);
 	if ( flMaxDistFromSegment != 0.0f )
 	{
 		// Also, add in a little force to get us closer to our current line segment if we can

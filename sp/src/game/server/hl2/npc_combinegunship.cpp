@@ -2142,7 +2142,7 @@ void CNPC_CombineGunship::Flight( void )
 	accel.z = 2.0 * (deltaPos.z - GetAbsVelocity().z * dt + 0.5 * 384 * dt * dt) / (dt * dt);
 	
 	float flDistFromPath = 0.0f;
-	Vector vecPoint, vecDelta;
+	Vector vecPoint, vecDelta(0.0f);
 	if ( m_lifeState != LIFE_DYING && IsOnPathTrack() )
 	{
 		// Also, add in a little force to get us closer to our current line segment if we can
