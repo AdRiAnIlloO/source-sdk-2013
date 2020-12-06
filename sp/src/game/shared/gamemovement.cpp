@@ -4365,33 +4365,43 @@ void CGameMovement::Duck( void )
 		// DUCK
 		if ( ( mv->m_nButtons & IN_DUCK ) || bDuckJump )
 		{
+			if ( buttonsPressed & IN_DUCK )
+			{
 // XBOX SERVER ONLY
 #if !defined(CLIENT_DLL)
-			if ( IsX360() && buttonsPressed & IN_DUCK )
-			{
-				// Hinting logic
-				if ( player->GetToggledDuckState() && player->m_nNumCrouches < NUM_CROUCH_HINTS )
+				if ( IsX360() )
 				{
-					UTIL_HudHintText( player, "#Valve_Hint_Crouch" );
-					player->m_nNumCrouches++;
+					// Hinting logic
+					if ( player->GetToggledDuckState() && player->m_nNumCrouches < NUM_CROUCH_HINTS )
+					{
+						UTIL_HudHintText( player, "#Valve_Hint_Crouch" );
+						player->m_nNumCrouches++;
+					}
+				}
+#endif
+
+				if ( bInDuck )
+				{
+					// Invert time if press before fully unducked!!!
+					player->m_Local.m_flDucktime = GAMEMOVEMENT_DUCK_TIME * 2.0f
+						- player->m_Local.m_flDucktime - TIME_TO_DUCK_MS;
+				}
+				// Have the duck button pressed, but the player currently isn't in the duck position.
+				else if ( !bDuckJump && !bDuckJumpTime )
+				{
+					player->m_Local.m_flDucktime = GAMEMOVEMENT_DUCK_TIME;
+					player->m_Local.m_bDucking = true;
 				}
 			}
-#endif
-			// Have the duck button pressed, but the player currently isn't in the duck position.
-			if ( ( buttonsPressed & IN_DUCK ) && !bInDuck && !bDuckJump && !bDuckJumpTime )
-			{
-				player->m_Local.m_flDucktime = GAMEMOVEMENT_DUCK_TIME;
-				player->m_Local.m_bDucking = true;
-			}
-			
+
 			// The player is in duck transition and not duck-jumping.
 			if ( player->m_Local.m_bDucking && !bDuckJump && !bDuckJumpTime )
 			{
 				float flDuckMilliseconds = MAX( 0.0f, GAMEMOVEMENT_DUCK_TIME - ( float )player->m_Local.m_flDucktime );
 				float flDuckSeconds = flDuckMilliseconds * 0.001f;
 				
-				// Finish in duck transition when transition time is over, in "duck", in air.
-				if ( ( flDuckSeconds > TIME_TO_DUCK ) || bInDuck || bInAir )
+				// Finish in duck transition when transition time is over, in air.
+				if ( ( flDuckSeconds > TIME_TO_DUCK ) || bInAir )
 				{
 					FinishDuck();
 				}
@@ -4431,7 +4441,7 @@ void CGameMovement::Duck( void )
 			if ( player->m_Local.m_bInDuckJump )
 			{
 				// Check for a crouch override.
-   				if ( !( mv->m_nButtons & IN_DUCK ) )
+				if ( !( mv->m_nButtons & IN_DUCK ) )
 				{
 					trace_t trace;
 					if ( CanUnDuckJump( trace ) )
